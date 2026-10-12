@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
+import { mkdtemp, rm, symlink } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { installShutdownHandlers } from '../src/cli.mjs';
+import { installShutdownHandlers, isDirectExecution } from '../src/cli.mjs';
 import { createConnector, endpoints } from '../src/connector.mjs';
 
 const tool = {
@@ -250,4 +254,17 @@ test('SIGINT shuts down once and uses the conventional interrupt exit code', asy
   assert.equal(stdout, '');
   assert.equal(processLike.listenerCount('SIGINT'), 0);
   assert.equal(processLike.listenerCount('SIGTERM'), 0);
+});
+
+test('detects direct execution through npm bin symlinks', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'invokely-cli-symlink-'));
+  const linkPath = join(directory, 'invokely-mcp-connector');
+  const cliPath = fileURLToPath(new URL('../src/cli.mjs', import.meta.url));
+  try {
+    await symlink(cliPath, linkPath);
+    assert.equal(isDirectExecution(linkPath), true);
+    assert.equal(isDirectExecution(join(directory, 'missing-cli')), false);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
