@@ -34,13 +34,30 @@ An MCP client can launch the connector with Node and the checkout's absolute pat
 
 Replace both paths with paths on your computer. This uses trial access. To use an API key, configure `INVOKELY_API_KEY` in the MCP client's environment settings. Use the client's local secret setting when available, and avoid putting a real key in a JSON configuration file. You can also run the connector directly from the checkout with `npm start`.
 
+## Run from GitHub with npx
+
+An MCP client can install and launch the connector from its public GitHub repository:
+
+```json
+{
+  "mcpServers": {
+    "invokely": {
+      "command": "npx",
+      "args": ["-y", "github:estevecastells/invokely-mcp-connector"]
+    }
+  }
+}
+```
+
+This command was tested with Node.js 22 from a clean temporary directory. It uses trial access unless `INVOKELY_API_KEY` is set in the MCP client's environment. The connector is not published to npm, so the bare package command `npx -y invokely-mcp-connector` is not available.
+
 To use an API key, set it in the environment that launches the connector:
 
 ```sh
 INVOKELY_API_KEY=ivk_your_key npm start
 ```
 
-Once the connector is published to npm, an MCP client with stdio support can start it with `npx -y invokely-mcp-connector`. Set `INVOKELY_API_KEY` in that client's environment to use an authenticated account. The connector writes protocol messages to stdout and does not log requests or credentials.
+The connector writes protocol messages to stdout and does not log requests or credentials.
 
 The adapter supports trial access and API-key bearer authentication. It does not implement an OAuth flow.
 
