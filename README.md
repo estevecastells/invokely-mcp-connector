@@ -4,6 +4,8 @@ This repository contains a local stdio adapter for Invokely's hosted MCP service
 
 The adapter uses `https://invokely.ai/mcp/trial` when `INVOKELY_API_KEY` is unset. The trial service allows 25 calls per day per IP address. When a key is configured, the adapter uses `https://invokely.ai/mcp` and sends the key as an Authorization bearer token.
 
+The Free plan includes 500 calls per month. This is separate from the account-free trial limit above. See [pricing](https://invokely.ai/pricing) for current plan details.
+
 ## Requirements
 
 - Node.js 22 or later
